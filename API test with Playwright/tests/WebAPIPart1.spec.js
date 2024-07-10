@@ -1,60 +1,48 @@
-const  {test, expect, request} = require('@playwright/test');
-
+const { test, expect, request } = require('@playwright/test');
+const { APIUtils } = require('../utils/APIUtils');
+let apiUtils = null;
+let responseObj = null;
 const host = 'https://rahulshettyacademy.com/api';
-const loginPayload = {userEmail: "samgreen@qa.com", userPassword: "Qa_Password1"}
-let token;
+const loginPayLoad = { userEmail: "samgreen@qa.com", userPassword: "Qa_Password1" };
+const orderPayLoad = { orders: [{ country: "Cuba", productOrderedId: "6581ca399fd99c85e8ee7f45" }] };
 
-const email = 'samgreen@qa.com';
-const password = 'Qa_Password1';
-const expectedProductsTitles = ['ZARA COAT 3', 'ADIDAS ORIGINAL', 'IPHONE 13 PRO'];
-const expectedProduct = 'ZARA COAT 3';
-const text = " Thankyou for the order. "
 
-test.beforeAll( async() => {
-    const loginEndpoint = host + "/ecom/auth/login"
-    const apiContext = await request.newContext();
-    const loginResponse = await apiContext.post(loginEndpoint, 
-        {data: loginPayload}
-    );
-
-    await expect(loginResponse.ok).toBeTruthy();
-    const loginResponseJson = await loginResponse.json();
-   
-    token = loginResponseJson.token;
-   
-});
-
-test.beforeEach( async() => {
-
-    
-});
-
-test.only('Test that CreateOrder API creates an Order', async({page}) => {
- const createOrderEndpoint = host + '/ecom/order/create-order';
- const createOrderPayload = {orders: [{country: "Cuba", productOrderedId: "6581ca399fd99c85e8ee7f45"}]};
-
- await page.addInitScript(value => {
-    window.localStorage.setItem('token', value);
-}, token);
+test.beforeAll(async () => {
 
     const apiContext = await request.newContext();
-    const orderResponse = await apiContext.post(createOrderEndpoint,
-        {
-        data: createOrderPayload,
-        headers: {
-            'Authorization' : token,
-            'Content-Type': 'application/json'
+    apiUtils = new APIUtils(apiContext, loginPayLoad);
+    responseObj = apiUtils.createOrder(orderPayLoad);
+});
+
+test.beforeEach(async () => {
+
+
+});
+
+test.only('Test that CreateOrder API creates an Order', async ({ page }) => {
+
+    await page.addInitScript(value => {
+        window.localStorage.setItem('token', value);
+    }, responseObj.token);
+
+
+
+    await page.goto('https://rahulshettyacademy.com/client/');
+    await page.locator('button').nth(2).click();
+    await page.locator('tbody').waitFor();
+
+    const rows = await page.locator("tbody tr");
+
+    for (let i = 0; i < await rows.count(); ++i) {
+        const rowOrderId = await rows.nth(i).locator('th').textContent();
+        if (response.orderId.includes(rowOrderId)) {
+            await rows.nth(i).locator('button').first().click();
+            break;
         }
-    })
-  
-   await expect(orderResponse.ok).toBeTruthy();
-    const orderJson = await orderResponse.json();
-    console.log(orderJson); 
+    }
 
-    //add product to shoping cart
-//await page.goto('https://rahulshettyacademy.com/client/');
-const msg = orderJson.message;
-await expect(msg.length> 0).toBeTruthy();
-await expect(orderJson.orders[0] === null).toBeFalsy();
-    
+    const orderIdDetails = await page.locator('.col-text').textContent();
+    await page.pause();
+    await expect(orderId.includes(orderIdDetails)).toBeTruthy();
+
 });
