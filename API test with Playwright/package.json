@@ -2,7 +2,9 @@
   "name": "api-test-with-playwright",
   "version": "1.0.0",
   "main": "WebAPIPart1.spec.js",
-  "scripts": {},
+  "scripts": {
+    "test": "npx playwright test tests tests/WebAPIPart1.spec.js --debug"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
