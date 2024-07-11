@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "WebAPIPart1.spec.js",
   "scripts": {
-    "test": "npx playwright test tests tests/WebAPIPart2.spec.js --headed"
+    "test": "npx playwright test tests tests/WebAPIPart2.spec.js --debug"
   },
   "keywords": [],
   "author": "",

@@ -1,5 +1,6 @@
 const { test, expect, request } = require('@playwright/test');
 const { APIUtils } = require('../utils/APIUtils');
+const { TIMEOUT } = require('dns');
 let apiUtils;
 let responseObj;
 
@@ -57,7 +58,7 @@ test('Test that CreateOrder API creates an Order Fake Response', async ({ browse
 
 });
 
-test.only('Security test request intercept', async ({ browser }) => {
+test('Security test request intercept', async ({ browser }) => {
 
     let context = await browser.newContext();
     let page = await context.newPage();
@@ -83,3 +84,20 @@ test.only('Security test request intercept', async ({ browser }) => {
     await expect(warningMsg.includes('You are not authorize to view this order')).toBeTruthy();
 
 });
+
+test.only('Abort network call', async({browser}) => {
+    let context = await browser.newContext();
+    let page = await context.newPage();
+
+    await page.addInitScript(value => {
+        window.localStorage.setItem('token', value);
+    }, responseObj.token);
+
+   
+
+   await page.route('**/*.{jpg, png, jpeg}', route => route.abort());
+    await page.goto('https://rahulshettyacademy.com/client');
+
+    page.pause();   
+
+})
