@@ -11,7 +11,7 @@ test.beforeAll(async () => {
 
     const apiContext = await request.newContext();
     apiUtils = new APIUtils(apiContext, loginPayLoad);
-    responseObj = apiUtils.createOrder(orderPayLoad);
+    responseObj = await apiUtils.createOrder(orderPayLoad);
 });
 
 test.beforeEach(async () => {
@@ -19,7 +19,7 @@ test.beforeEach(async () => {
 
 });
 
-test.only('Test that CreateOrder API creates an Order', async ({ page }) => {
+test('Test that CreateOrder API creates an Order', async ({ page }) => {
 
     await page.addInitScript(value => {
         window.localStorage.setItem('token', value);

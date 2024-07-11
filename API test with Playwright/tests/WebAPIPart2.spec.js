@@ -1,6 +1,6 @@
-// @ts-check
 const { test, expect } = require('@playwright/test');
 
+let webContext;
 const host = 'https://rahulshettyacademy.com/client';
 const email = 'samgreen@qa.com';
 const password = 'Qa_Password1';
@@ -17,15 +17,18 @@ test.beforeAll(async({browser}) => {
     await page.locator('#userPassword').fill(password);
     await page.click('#login');
     await page.waitForLoadState('networkidle');
-    await context.storageState({path: 'state.json'});
+    await context.storageState({path:'browserData.json'});
+    webContext = await browser.newContext({storageState: 'browserData.json'});
 
 })
-test('Purchase one product', async ({ page }) => {
+test('Purchase one product', async () => {
 
     
     
     //add product to shoping cart
 
+    const page = await webContext.newPage();
+    await page.goto('https://rahulshettyacademy.com/client');
     const products = await page.locator('.card-body');
 
     const titles = await page.locator('.card-body b').allTextContents();
@@ -44,7 +47,7 @@ test('Purchase one product', async ({ page }) => {
     const isElementPresentInCart = await page.locator('h3:has-text("ZARA COAT 3")').isVisible();
    
     await expect(isElementPresentInCart).toBeTruthy();
-
+s
     await page.locator('text = Checkout').click();
 
     //ToDo
